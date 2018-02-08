@@ -1,16 +1,5 @@
 package com.db.dynamodb;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URLDecoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -27,17 +16,16 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.event.S3EventNotification.S3EventNotificationRecord;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-//import com.amazonaws.services.s3.model.S3Event;
 import com.amazonaws.services.s3.model.S3Object;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URLDecoder;
+
 public class SaveCSVFileToTable implements RequestHandler<S3Event, String> {
-    /*private static final float MAX_WIDTH = 100;
-    private static final float MAX_HEIGHT = 100;*/
-    private final String CSV_TYPE = (String) "jpg";
-    private final String JPG_TYPE = (String) "jpg";
-    private final String JPG_MIME = (String) "image/jpeg";
-    /*private final String PNG_TYPE = (String) "png";
-    private final String PNG_MIME = (String) "image/png";*/
+    private final String CSV_TYPE = (String) "csv";
 
     public String handleRequest(S3Event s3event, Context context) {
         try {
@@ -57,23 +45,7 @@ public class SaveCSVFileToTable implements RequestHandler<S3Event, String> {
             String successDstKey = "success-" + srcKey;
             String errorDstKey = "error-" + srcKey;
 
-            // Sanity check: validate that source and destination are different
-            // buckets.
-            /*if (srcBucket.equals(dstBucket)) {
-                System.out
-                        .println("Destination bucket must not match source bucket.");
-                return "";
-            }*/
-
-            // Infer the type.
-            Matcher matcher = Pattern.compile(".*\\.([^\\.]*)").matcher(srcKey);
-            if (!matcher.matches()) {
-                System.out.println("Unable to infer file type for key "
-                        + srcKey);
-                return "";
-            }
-            String type = matcher.group(1);
-            if (!(CSV_TYPE.equals(type))) {
+            if (!srcKey.endsWith(CSV_TYPE)) {
                 System.out.println("Skipping non-csv " + srcKey);
                 return "";
             }
