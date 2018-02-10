@@ -6,13 +6,12 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputExceededException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
+import java.time.Instant;
 
 public class SaveItems {
 
@@ -20,6 +19,9 @@ public class SaveItems {
 
         String splitChar = ",";
         String tableName = "Table";
+        int totalItems = 0;
+        int successfulInsertion = 0;
+        int failedInsertion = 0;
 
         if (args.length!=1){
             System.out.println("Please specify the csv file: SaveItems <csvFile>");
@@ -37,6 +39,8 @@ public class SaveItems {
 
         String line = "";
 
+        System.out.println("Insertion started at "+ Instant.now().toString());
+
         try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
             int columnNumber = -1;
             String [] headers = null;
@@ -53,17 +57,25 @@ public class SaveItems {
                         }
                     }
                     try{
+                        if (totalItems != 0 && totalItems%100==0){
+                            System.out.println("Inserting item "+totalItems);
+                        }
                         table.putItem(item);
+                        successfulInsertion++;
                     }catch(ProvisionedThroughputExceededException e){
-                        System.err.println("Error inserting item: " + fields[0]);
+                        failedInsertion++;
+                    }finally {
+                        totalItems++;
                     }
                 }
             }
+
+            System.out.println("Insertion finished at "+ Instant.now().toString());
+            System.out.println("Items: " + totalItems + ", Inserted: " + successfulInsertion + ", Failed: " + failedInsertion);
 
         } catch (Exception e) {
             System.out.println("Line: "+line);
             e.printStackTrace();
         }
-
     }
 }

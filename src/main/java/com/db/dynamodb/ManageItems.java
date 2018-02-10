@@ -1,7 +1,6 @@
 package com.db.dynamodb;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -12,8 +11,6 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputExceededException;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ManageItems {
     public static void main(String[] args) throws Exception {

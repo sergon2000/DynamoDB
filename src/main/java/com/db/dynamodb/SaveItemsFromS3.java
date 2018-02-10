@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
 
-public class SaveCSVFileToTable implements RequestHandler<S3Event, String> {
+public class SaveItemsFromS3 implements RequestHandler<S3Event, String> {
     private final String CSV_TYPE = (String) "csv";
 
     public String handleRequest(S3Event s3event, Context context) {
