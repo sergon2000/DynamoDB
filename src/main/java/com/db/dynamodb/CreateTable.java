@@ -15,17 +15,19 @@ public class CreateTable {
         DynamoDB dynamoDB = new DynamoDB(client);
 
         String tableName = "Table";
-        String partitionKey = "CensusTract";
+        String partitionKey = "State";
+        String sortKey = "CensusTract";
 
         try {
             System.out.println("Creating the table, wait...");
 
             Table table = dynamoDB.createTable (tableName,
                     Arrays.asList (
-                            new KeySchemaElement(partitionKey, KeyType.HASH)
-                    ),
+                            new KeySchemaElement(partitionKey, KeyType.HASH),
+                            new KeySchemaElement(sortKey, KeyType.RANGE)),
                     Arrays.asList (
-                            new AttributeDefinition(partitionKey, ScalarAttributeType.S)
+                            new AttributeDefinition(partitionKey, ScalarAttributeType.S),
+                            new AttributeDefinition(sortKey, ScalarAttributeType.S)
                     ),
                     new ProvisionedThroughput(5L, 25L)
             );
